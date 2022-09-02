@@ -14,7 +14,7 @@ namespace GiftCertificateMinimalApi.Services
     {
         private readonly SqlConnectionFactory _connectionFactory;
         private readonly IMapper _mapper;
-        private List<string> barcodesList = default!;
+        private List<string> _barcodesList = default!;
         private readonly ElasticLogElementInternal _logElement;
 
         public GiftCertService(SqlConnectionFactory connectionFactory, IMapper mapper)
@@ -24,9 +24,9 @@ namespace GiftCertificateMinimalApi.Services
             _logElement = new();
         }
 
-        public async Task<IEnumerable<CertGetResponse>> GetCertsInfoByListAsync(List<string> barcodes)
+        public async Task<List<CertGetResponse>> GetCertsInfoByListAsync(List<string> barcodes)
         {
-            barcodesList = barcodes;
+            _barcodesList = barcodes;
             var result = new List<CertGetResponse>();
             
             SqlConnection connection = await GetSqlConnectionAsync();
@@ -55,20 +55,20 @@ namespace GiftCertificateMinimalApi.Services
 
         private async Task<List<CertGetResponse>> GetCertsInfoResult(SqlCommand sqlCommand)
         {
-            var resultDTO = new List<CertGetResponseDto>();
+            var resultDto = new List<CertGetResponseDto>();
 
-            using (var dataReader = await sqlCommand.ExecuteReaderAsync())
+            await using (var dataReader = await sqlCommand.ExecuteReaderAsync())
             {
                 while (await dataReader.ReadAsync())
                 {
-                    resultDTO.Add(_mapper.Map<CertGetResponseDto>(dataReader));
+                    resultDto.Add(_mapper.Map<CertGetResponseDto>(dataReader));
                 }
             }
 
-            return resultDTO.Select(x =>
+            return resultDto.Select(x =>
                 new CertGetResponse
                 {
-                    Barcode = barcodesList.Find(b => b.ToUpper() == x.Barcode) ?? x.Barcode,
+                    Barcode = _barcodesList.Find(b => b.ToUpper() == x.Barcode) ?? x.Barcode,
                     Sum = x.Sum
                 }).ToList();
         }
@@ -114,7 +114,7 @@ namespace GiftCertificateMinimalApi.Services
 
         private SqlCommand GetSqlCommandCertInfo(SqlConnection connection)
         {
-            List<string> barcodesUpperCase = barcodesList.Select(x => x.ToUpper()).Distinct().ToList();
+            List<string> barcodesUpperCase = _barcodesList.Select(x => x.ToUpper()).Distinct().ToList();
 
             SqlCommand command = new()
             {

@@ -12,7 +12,7 @@ namespace GiftCertificateMinimalApi.Contracts.V1.Responses
         [JsonPropertyName("refresh")]
         public string Refresh { get; set; } = string.Empty;
         [JsonPropertyName("expiration_refresh")]
-        public DateTime Expiration_refresh { get; set; }
+        public DateTime ExpirationRefresh { get; set; }
 
         public LoginResponse()
         {
@@ -23,7 +23,7 @@ namespace GiftCertificateMinimalApi.Contracts.V1.Responses
             Token = response.JwtToken;
             Expiration = response.JwtValidTo;
             Refresh = response.RefreshToken;
-            Expiration_refresh = response.RefreshValidTo;
+            ExpirationRefresh = response.RefreshValidTo;
         }
     }
 }

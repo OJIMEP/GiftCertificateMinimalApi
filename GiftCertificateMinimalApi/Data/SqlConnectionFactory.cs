@@ -23,7 +23,8 @@ namespace GiftCertificateMinimalApi.Data
 
             var connectionParameters = _configuration.GetSection("OneSDatabases")
                 .Get<List<DatabaseConnectionParameter>>()
-                .Select(x => new DatabaseInfo(x));
+                .Select(x => new DatabaseInfo(x))
+                .ToList();
 
             var timeMs = DateTime.Now.Millisecond % 100;
 

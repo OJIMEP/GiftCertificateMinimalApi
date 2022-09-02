@@ -13,9 +13,9 @@
             LogMessageDefinition(logger, message, null);
         }
 
-        public static void LogErrorMessage(this ILogger logger, string message, Exception? exeption)
+        public static void LogErrorMessage(this ILogger logger, string message, Exception? exception)
         {
-            LogErrorMessageDefinition(logger, message, exeption);
+            LogErrorMessageDefinition(logger, message, exception);
         }
     }
 

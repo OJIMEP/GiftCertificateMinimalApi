@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace GiftCertificateMinimalApi.Validation
+namespace GiftCertificateMinimalApi.Validators
 {
     public class GiftCertValidator : AbstractValidator<List<string>?>
     {

@@ -1,5 +1,4 @@
-﻿using GiftCertificateMinimalApi.Logging;
-using System.Collections;
+﻿using System.Collections;
 using System.Text.Json;
 
 namespace GiftCertificateMinimalApi.Logging

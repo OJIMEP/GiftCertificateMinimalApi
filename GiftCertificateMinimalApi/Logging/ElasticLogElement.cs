@@ -37,11 +37,11 @@ namespace GiftCertificateMinimalApi.Logging
             Path = $"{httpContext.Request.Path}({httpContext.Request.Method})";
             Host = httpContext.Request.Host.ToString();
             Id = Guid.NewGuid().ToString();
-            AuthenticatedUser = httpContext.User?.Identity?.Name;
+            AuthenticatedUser = httpContext.User.Identity?.Name;
 
             AdditionalData.Add("Referer", httpContext.Request.Headers["Referer"].ToString());
             AdditionalData.Add("User-Agent", httpContext.Request.Headers["User-Agent"].ToString());
-            AdditionalData.Add("RemoteIpAddress", httpContext.Request?.HttpContext?.Connection?.RemoteIpAddress?.ToString());
+            AdditionalData.Add("RemoteIpAddress", httpContext.Connection.RemoteIpAddress?.ToString());
         }
 
         public ElasticLogElement(HttpContext httpContext, ElasticLogElementInternal dto) : this(httpContext)

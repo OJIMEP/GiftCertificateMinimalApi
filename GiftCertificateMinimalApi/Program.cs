@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-// устанавливаем все наши сервисы
+// install all uor services
 builder.Services.AddEndpoints<Program>(builder.Configuration);
 
 builder.Logging.AddProvider(
@@ -47,7 +47,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// добавляем все наши эндпоинты
+// add all our endpoints
 app.UseEndpoints<Program>();
 
 using (var scope = app.Services.CreateScope())

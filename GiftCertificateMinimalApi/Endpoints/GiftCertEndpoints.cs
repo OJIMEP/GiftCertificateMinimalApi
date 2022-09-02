@@ -30,7 +30,7 @@ namespace GiftCertificateMinimalApi.Endpoints
         public static void DefineEndpoints(IEndpointRouteBuilder app)
         {
             app.MapGet(BaseRoute, GetCertInfoAsync)
-                .Produces<CertGetResponse>(200)
+                .Produces<CertGetResponse>()
                 .Produces<ErrorResponse>(400)
                 .Produces<ErrorResponse>(500)
                 .Produces(401)
@@ -38,7 +38,7 @@ namespace GiftCertificateMinimalApi.Endpoints
 
             app.MapPost(BaseRoute, GetCertsInfoAsync)
                 .Accepts<string[]>("application/json")
-                .Produces<CertGetResponse[]>(200)
+                .Produces<CertGetResponse[]>()
                 .Produces<ErrorResponse>(400)
                 .Produces<ErrorResponse>(500)
                 .Produces(401)
@@ -74,7 +74,7 @@ namespace GiftCertificateMinimalApi.Endpoints
             HttpContext context,
             bool single = false)
         {
-            var validationResult = validator.Validate(barcodeList);
+            var validationResult = await validator.ValidateAsync(barcodeList);
 
             if (!validationResult.IsValid)
             {

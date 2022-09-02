@@ -18,7 +18,7 @@ namespace GiftCertificateMinimalApi.Endpoints
                     Name = "JWT Authentication",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
-                    Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+                    Description = "Put **_ONLY_** your JWT Bearer token on text-box below!",
 
                     Reference = new OpenApiReference
                     {

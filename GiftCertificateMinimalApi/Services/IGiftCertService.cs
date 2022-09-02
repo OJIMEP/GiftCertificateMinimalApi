@@ -5,7 +5,7 @@ namespace GiftCertificateMinimalApi.Services
 {
     public interface IGiftCertService
     {
-        Task<IEnumerable<CertGetResponse>> GetCertsInfoByListAsync(List<string> barcodes);
+        Task<List<CertGetResponse>> GetCertsInfoByListAsync(List<string> barcodes);
 
         ElasticLogElementInternal GetLog();
     }

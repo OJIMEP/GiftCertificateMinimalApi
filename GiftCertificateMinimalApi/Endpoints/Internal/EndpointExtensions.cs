@@ -2,7 +2,7 @@
 
 namespace GiftCertificateMinimalApi.Endpoints.Internal
 {
-    public static class EndpointExtentions
+    public static class EndpointExtensions
     {
         public static void AddEndpoints<TMarker>(this IServiceCollection services, IConfiguration configuration)
         {
@@ -38,8 +38,8 @@ namespace GiftCertificateMinimalApi.Endpoints.Internal
 
         private static IEnumerable<TypeInfo> GetEndpointTypesFromAssembly(Type typeMarker)
         {
-            // ищем в проекте все классы, имплементирующие инерфейс IEndpoints
-            // и так как это абстрактный интерфейс, не надо создавать объекты
+            // find in project all classes implementing IEndpoints
+            // and so is abstract interface, no need create objects
             return typeMarker.Assembly.DefinedTypes
                             .Where(x => !x.IsAbstract && !x.IsInterface && typeof(IEndpoints).IsAssignableFrom(x));
         }

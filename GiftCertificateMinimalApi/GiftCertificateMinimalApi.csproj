@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <Reference Include="AuthLibrary">
-      <HintPath>..\..\DateTimeService\AuthLibrary\bin\Release\net6.0\AuthLibrary.dll</HintPath>
+      <HintPath>..\..\GiftCertificateService\AuthLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
 

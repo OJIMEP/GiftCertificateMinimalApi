@@ -66,17 +66,14 @@ namespace GiftCertificateMinimalApi.Endpoints
                 var user = await userManager.FindByNameAsync(model.Username);
                 if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
                 {
-                    var response = await userService.AuthenticateAsync(model, context.Connection?.RemoteIpAddress.ToString());
-
-                    if (response == null)
-                        return Results.BadRequest();
+                    var response = await userService.AuthenticateAsync(model, context.Connection.RemoteIpAddress?.ToString() ?? "");
 
                     return Results.Ok(new LoginResponse(response));
                 }
                 return Results.Unauthorized();
             })
             .Accepts<LoginModel>("application/json")
-            .Produces<LoginResponse>(200)
+            .Produces<LoginResponse>()
             .Produces(400)
             .Produces(401)
             .WithTags("Authorization");
