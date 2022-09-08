@@ -7,6 +7,7 @@ using GiftCertificateMinimalApi.Logging;
 using GiftCertificateMinimalApi.Mapping;
 using GiftCertificateMinimalApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace GiftCertificateMinimalApi.Endpoints
 {
@@ -65,7 +66,6 @@ namespace GiftCertificateMinimalApi.Endpoints
             return result;
         }
 
-
         internal static async Task<IResult> GetInfoByListAsync(
             List<string> barcodeList, 
             IGiftCertService service, 
@@ -74,6 +74,8 @@ namespace GiftCertificateMinimalApi.Endpoints
             HttpContext context,
             bool single = false)
         {
+            var watch = Stopwatch.StartNew();
+
             var validationResult = await validator.ValidateAsync(barcodeList);
 
             if (!validationResult.IsValid)
@@ -99,9 +101,11 @@ namespace GiftCertificateMinimalApi.Endpoints
             }
             finally
             {
+                watch.Stop();
                 var logElement = new ElasticLogElement(context, service.GetLog());
                 logElement.SetRequest(barcodeList);
                 logElement.SetResponse(result);
+                logElement.TimeFullExecution = watch.ElapsedMilliseconds;
                 logger.LogMessageGen(logElement.ToString());
             }
 

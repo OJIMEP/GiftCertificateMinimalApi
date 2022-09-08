@@ -60,7 +60,6 @@ namespace GiftCertificateMinimalApi.Endpoints
         public static void DefineEndpoints(IEndpointRouteBuilder app)
         {
             app.MapPost("api/Authenticate/login",
-            [AllowAnonymous]
             async (LoginModel model, IUserService userService, UserManager<DateTimeServiceUser> userManager, HttpContext context) =>
             {
                 var user = await userManager.FindByNameAsync(model.Username);
@@ -76,7 +75,8 @@ namespace GiftCertificateMinimalApi.Endpoints
             .Produces<LoginResponse>()
             .Produces(400)
             .Produces(401)
-            .WithTags("Authorization");
+            .WithTags("Authorization")
+            .AllowAnonymous();
         }
     }
 }
