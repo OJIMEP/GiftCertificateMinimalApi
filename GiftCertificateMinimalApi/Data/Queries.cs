@@ -2,57 +2,71 @@
 {
     public static class Queries
     {
-        public static string CertInfo { get; } = @"SELECT
-	[_IDRRef],
-	[_Fld4242] 
-Into #Temp_CertRef
-FROM
-	[triovist].[dbo].[_Reference172] 
-where
-	[_Fld4242] IN(@Barcode);
-
-Select
-	T1._Fld14496RRef AS CertRef,
-	T1._Fld14497RRef AS CertStatus 
-Into #Temp_CertStatus
-From
-	[triovist].[dbo].[_InfoRg14495] T1 --cert history
-	Inner join (
-		SELECT
-			Max([_Period]) AS [_Period],
-			[_Fld14496RRef]
+        public static string CertInfo { get; } =  @"SELECT
+			_IDRRef AS Сертификат,
+			_Fld4242 AS Штрихкод 
+		INTO #Temp_CertRef
 		FROM
-			[triovist].[dbo].[_InfoRg14495]
-			Inner Join #Temp_CertRef On _Fld14496RRef = [_IDRRef] 
-		Where
-			[_Active] = 0x01
-			And [_Period] <= Dateadd(Year, 2000, GETDATE())
-		group by
-			[_Fld14496RRef]
-			) T2 On T1._Fld14496RRef = T2._Fld14496RRef
-			And T1.[_Period] = T2.[_Period]
-		Where
-			_Fld14497RRef IN (--filter by status
-				0xB3A1D155BEA215A74F77177CEA264869, 
-				0x8EABEBCCF5A9FBF74BCB7DA9464028AE
-			);
-
-SELECT
-	[_Fld4242] AS Barcode,
-	Sum([_Fld16861]) AS SumLeft
-FROM
-	#Temp_CertRef
-	Inner join [triovist].[dbo].[_AccumRgT16863] SumRemains
-		On SumRemains.[_Fld16860RRef] = #Temp_CertRef.[_IDRRef]
-	Inner join #Temp_CertStatus 
-		On SumRemains.[_Fld16860RRef] = #Temp_CertStatus.CertRef
-Where
-	[_Period] = '5999-11-01T00:00:00'
-Group by
-	[_Fld16860RRef],
-	[_Fld4242],
-	CertStatus
-Having Sum([_Fld16861]) > 0;";
+			dbo._Reference172 --Справочник ПодарочныеСертификаты
+		WHERE
+			_Fld4242 IN(@Barcode)
+		;
+		SELECT
+			T1._Fld14496RRef AS Сертификат,
+			T1._Fld14497RRef AS Статус,
+			T1._Fld26990 AS СрокДействия
+		INTO #Temp_CertStatus
+		FROM
+			dbo._InfoRg14495 T1 --РС ИсторияПодарочныхСертификатов
+			INNER JOIN (
+				SELECT
+					Max(_Period) AS Период,
+					_Fld14496RRef
+				FROM
+					dbo._InfoRg14495
+					INNER JOIN #Temp_CertRef 
+					ON _Fld14496RRef = Сертификат 
+				WHERE
+					_Active = 0x01
+					AND _Period <= Dateadd(Year, 2000, GETDATE())
+				GROUP BY
+					_Fld14496RRef) T2 
+					ON T1._Fld14496RRef = T2._Fld14496RRef
+						AND T1._Period = T2.Период
+		;
+		SELECT
+			Сертификат,
+			Sum(_Fld16861) AS Остаток
+		INTO #Temp_SumLeft
+		FROM
+			#Temp_CertRef
+			INNER JOIN dbo._AccumRgT16863 SumRemains --РН ПодарочныеСертификаты
+				ON SumRemains._Fld16860RRef = #Temp_CertRef.Сертификат
+		WHERE
+			_Period = '5999-11-01T00:00:00'
+		GROUP BY
+			Сертификат
+		HAVING Sum(_Fld16861) > 0
+		;
+		SELECT
+			#Temp_CertRef.Штрихкод AS Barcode,
+			#Temp_CertStatus.Статус AS CertStatus,
+			CASE 
+				WHEN #Temp_CertStatus.Статус IN (0xB3A1D155BEA215A74F77177CEA264869, 0x8EABEBCCF5A9FBF74BCB7DA9464028AE) -- Активирован, ЧастичноПогашен
+					THEN 1
+				ELSE 0
+			END AS IsActive,
+			CASE 
+				WHEN ISNULL(#Temp_CertStatus.СрокДействия, @EmptyDate) > @DateNow
+					THEN 1
+				ELSE 0
+			END AS IsValid,
+			ISNULL(#Temp_SumLeft.Остаток, 0) AS SumLeft
+		FROM #Temp_CertRef
+			LEFT JOIN #Temp_CertStatus
+			ON #Temp_CertRef.Сертификат = #Temp_CertStatus.Сертификат
+			LEFT JOIN #Temp_SumLeft
+			ON #Temp_CertRef.Сертификат = #Temp_SumLeft.Сертификат";
 
 		public const string DatabaseBalancingReplicaFull = @"select datediff(ms, last_commit_time, getdate())
 			from [master].[sys].[dm_hadr_database_replica_states]";

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using GiftCertificateMinimalApi.Contracts.V1.Responses;
 using GiftCertificateMinimalApi.Data;
 using GiftCertificateMinimalApi.Exceptions;
 using GiftCertificateMinimalApi.Models;
@@ -15,7 +14,7 @@ namespace GiftCertificateMinimalApi.Services
         private readonly SqlConnectionFactory _connectionFactory;
         private readonly IMapper _mapper;
         private List<string> _barcodesList = default!;
-        private readonly ElasticLogElementInternal _logElement;
+        private ElasticLogElementInternal _logElement;
 
         public GiftCertService(SqlConnectionFactory connectionFactory, IMapper mapper)
         {
@@ -24,10 +23,11 @@ namespace GiftCertificateMinimalApi.Services
             _logElement = new();
         }
 
-        public async Task<List<CertGetResponse>> GetCertsInfoByListAsync(List<string> barcodes)
+        public async Task<List<CertGetResponseDto>> GetCertsInfoByListAsync(List<string> barcodes)
         {
             _barcodesList = barcodes;
-            var result = new List<CertGetResponse>();
+            _logElement = new();
+            var result = new List<CertGetResponseDto>();
             
             SqlConnection connection = await GetSqlConnectionAsync();
 
@@ -53,7 +53,7 @@ namespace GiftCertificateMinimalApi.Services
             return result;
         }
 
-        private async Task<List<CertGetResponse>> GetCertsInfoResult(SqlCommand sqlCommand)
+        private async Task<List<CertGetResponseDto>> GetCertsInfoResult(SqlCommand sqlCommand)
         {
             var resultDto = new List<CertGetResponseDto>();
 
@@ -65,12 +65,21 @@ namespace GiftCertificateMinimalApi.Services
                 }
             }
 
-            return resultDto.Select(x =>
-                new CertGetResponse
+            resultDto.ForEach(x => x.Barcode = _barcodesList.Find(b => b.ToUpper() == x.Barcode) ?? x.Barcode);
+
+            foreach (var barcode in _barcodesList)
+            {
+                if (resultDto.Find(x => x.Barcode == barcode) == null)
                 {
-                    Barcode = _barcodesList.Find(b => b.ToUpper() == x.Barcode) ?? x.Barcode,
-                    Sum = x.Sum
-                }).ToList();
+                    resultDto.Add(new CertGetResponseDto
+                    {
+                        Barcode = barcode,
+                        NotFound = true
+                    });
+                }
+            }
+
+            return resultDto;
         }
 
         private async Task<SqlConnection> GetSqlConnectionAsync()
@@ -132,6 +141,12 @@ namespace GiftCertificateMinimalApi.Services
             }
 
             command.CommandText = Queries.CertInfo.Replace("@Barcode", string.Join(",", barcodeParameters));
+
+            command.Parameters.Add("@DateNow", SqlDbType.DateTime);
+            command.Parameters["@DateNow"].Value = DateTime.Now.AddMonths(24000);
+
+            command.Parameters.Add("@EmptyDate", SqlDbType.DateTime);
+            command.Parameters["@EmptyDate"].Value = new DateTime(2001, 1, 1, 0, 0, 0);
 
             return command;
         }

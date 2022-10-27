@@ -1,11 +1,11 @@
-﻿using GiftCertificateMinimalApi.Contracts.V1.Responses;
-using GiftCertificateMinimalApi.Logging;
+﻿using GiftCertificateMinimalApi.Logging;
+using GiftCertificateMinimalApi.Models;
 
 namespace GiftCertificateMinimalApi.Services
 {
     public interface IGiftCertService
     {
-        Task<List<CertGetResponse>> GetCertsInfoByListAsync(List<string> barcodes);
+        Task<List<CertGetResponseDto>> GetCertsInfoByListAsync(List<string> barcodes);
 
         ElasticLogElementInternal GetLog();
     }
