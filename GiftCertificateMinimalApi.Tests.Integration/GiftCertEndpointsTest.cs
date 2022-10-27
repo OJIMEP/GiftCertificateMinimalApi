@@ -54,7 +54,6 @@ namespace GiftCertificateMinimalApi.Tests.Integration
         }
 
         [Theory]
-        [InlineData("api/GiftCert?barcode=CC13AVC5YRK", "Certs aren't valid")]
         [InlineData("api/GiftCert?barcode=CC13AVC5YRK1", "Cert's barcode should be 11 symbols length")]
         [InlineData("api/GiftCert?barcode=CC13AVC5Kдг", "Cert's barcode is in wrong format - only latin symbols and digits are allowed")]
         public async Task GetInfoAsync_WithInvalidBarcode(string query, string expected)
@@ -69,6 +68,21 @@ namespace GiftCertificateMinimalApi.Tests.Integration
             //assert
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
             (await response.Content.ReadAsAsync<ErrorResponse>()).Error.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("api/GiftCert?barcode=CC13AVC5YRK", "Certs aren't valid")]
+        public async Task GetInfoAsync_WithBarcodeDontExists(string query, string expected)
+        {
+            // Arrange 
+            var client = _factory.CreateClient();
+            await AuthenticateAsync(client);
+
+            // Act 
+            var response = await client.GetAsync(query);
+
+            //assert
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
         }
     }
 }
