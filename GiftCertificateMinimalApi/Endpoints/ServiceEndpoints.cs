@@ -2,7 +2,6 @@ using GiftCertificateMinimalApi.Contracts.V1.Responses;
 using GiftCertificateMinimalApi.Data;
 using GiftCertificateMinimalApi.Endpoints.Internal;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using GiftCertificateMinimalApi.Services;
 
 namespace GiftCertificateMinimalApi.Endpoints
