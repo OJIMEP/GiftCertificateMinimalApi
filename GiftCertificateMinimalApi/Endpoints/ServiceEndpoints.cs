@@ -2,7 +2,6 @@ using GiftCertificateMinimalApi.Contracts.V1.Responses;
 using GiftCertificateMinimalApi.Data;
 using GiftCertificateMinimalApi.Endpoints.Internal;
 using Microsoft.AspNetCore.Mvc;
-using GiftCertificateMinimalApi.Services;
 
 namespace GiftCertificateMinimalApi.Endpoints
 {
@@ -13,8 +12,6 @@ namespace GiftCertificateMinimalApi.Endpoints
 
         public static void AddServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IGiftCertService, GiftCertService>();            
-            services.AddSingleton<SqlConnectionFactory>();            
         }
 
         public static void DefineEndpoints(IEndpointRouteBuilder app)
@@ -27,14 +24,13 @@ namespace GiftCertificateMinimalApi.Endpoints
                 .AllowAnonymous();
         }
 
-        internal static async Task<IResult> GetHealthCheck(IConfiguration configuration, ILogger<SqlConnectionFactory> logger)
+        internal static async Task<IResult> GetHealthCheck(SqlConnectionFactory _connectionFactory)
         {
             DbConnection dbConnection = new();
-            SqlConnectionFactory ConnectionFactory = new(configuration, logger);
 
             try
             {
-                dbConnection = await ConnectionFactory.CreateConnectionAsync();
+                dbConnection = await _connectionFactory.CreateConnectionAsync();
             }
             catch (Exception ex)
             {
