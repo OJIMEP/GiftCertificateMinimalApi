@@ -2,6 +2,7 @@ using GiftCertificateMinimalApi.Contracts.V1.Responses;
 using GiftCertificateMinimalApi.Data;
 using GiftCertificateMinimalApi.Endpoints.Internal;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Versioning;
 
 namespace GiftCertificateMinimalApi.Endpoints
 {
@@ -10,10 +11,12 @@ namespace GiftCertificateMinimalApi.Endpoints
         private const string Tag = "Monitoring";
         private const string BaseRoute = "api/HealthCheck";
 
+        [RequiresPreviewFeatures]
         public static void AddServices(IServiceCollection services, IConfiguration configuration)
         {
         }
 
+        [RequiresPreviewFeatures]
         public static void DefineEndpoints(IEndpointRouteBuilder app)
         {
             app.MapGet(BaseRoute, GetHealthCheck)

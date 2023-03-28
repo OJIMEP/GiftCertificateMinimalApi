@@ -9,6 +9,7 @@ using GiftCertificateMinimalApi.Models;
 using GiftCertificateMinimalApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Runtime.Versioning;
 
 namespace GiftCertificateMinimalApi.Endpoints
 {
@@ -17,6 +18,7 @@ namespace GiftCertificateMinimalApi.Endpoints
         private const string Tag = "Gift certificates";
         private const string BaseRoute = "api/GiftCert";
 
+        [RequiresPreviewFeatures]
         public static void AddServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddValidatorsFromAssemblyContaining<Program>();
@@ -29,6 +31,7 @@ namespace GiftCertificateMinimalApi.Endpoints
             services.AddCors();
         }
 
+        [RequiresPreviewFeatures]
         public static void DefineEndpoints(IEndpointRouteBuilder app)
         {
             app.MapGet(BaseRoute, GetCertInfoAsync)

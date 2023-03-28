@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Runtime.Versioning;
 using System.Text;
 
 namespace GiftCertificateMinimalApi.Endpoints
 {
     public class AuthorizationEndpoints : IEndpoints
     {
+        [RequiresPreviewFeatures]
         public static void AddServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<DateTimeServiceContext>(
@@ -57,6 +59,7 @@ namespace GiftCertificateMinimalApi.Endpoints
             services.AddScoped<IUserService, UserService>();
         }
 
+        [RequiresPreviewFeatures]
         public static void DefineEndpoints(IEndpointRouteBuilder app)
         {
             app.MapPost("api/Authenticate/login",

@@ -2,11 +2,13 @@
 using GiftCertificateMinimalApi.Endpoints.Internal;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using System.Runtime.Versioning;
 
 namespace GiftCertificateMinimalApi.Endpoints
 {
     public class SwaggerEndpoints : IEndpoints
     {
+        [RequiresPreviewFeatures]
         public static void AddServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddSwaggerGen(setup =>
@@ -45,6 +47,7 @@ namespace GiftCertificateMinimalApi.Endpoints
             });
         }
 
+        [RequiresPreviewFeatures]
         public static void DefineEndpoints(IEndpointRouteBuilder app)
         {
         }
